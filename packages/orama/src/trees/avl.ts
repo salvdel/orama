@@ -121,11 +121,10 @@ export function rangeSearch<K, V>(node: RootNode<K, V>, min: K, max: K): V {
 
 export function greaterThan<K, V>(node: RootNode<K, V>, key: K, inclusive = false): V {
   const result: V[] = []
+  const stack: Array<Node<K, V>> = [node.root]
 
-  function traverse(node: Node<K, V>) {
-    if (node === null) {
-      return
-    }
+  while (stack.length > 0) {
+    const node = stack.pop()!
 
     if (inclusive && node.k >= key) {
       safeArrayPush(result, node.v as V[])
@@ -135,22 +134,24 @@ export function greaterThan<K, V>(node: RootNode<K, V>, key: K, inclusive = fals
       safeArrayPush(result, node.v as V[])
     }
 
-    traverse(node.l as Node<K, V>)
-    traverse(node.r as Node<K, V>)
-  }
+    if (node.r !== null) {
+        stack.push(node.r)
+    }
 
-  traverse(node.root)
+    if (node.l !== null) {
+        stack.push(node.l)
+    }
+  }
 
   return result as V
 }
 
 export function lessThan<K, V>(node: RootNode<K, V>, key: K, inclusive = false): V {
   const result: V[] = []
+  const stack: Array<Node<K, V>> = [node.root]
 
-  function traverse(node: Node<K, V>) {
-    if (node === null) {
-      return
-    }
+  while (stack.length > 0) {
+    const node = stack.pop()!
 
     if (inclusive && node.k <= key) {
       safeArrayPush(result, node.v as V[])
@@ -160,11 +161,14 @@ export function lessThan<K, V>(node: RootNode<K, V>, key: K, inclusive = false):
       safeArrayPush(result, node.v as V[])
     }
 
-    traverse(node.l as Node<K, V>)
-    traverse(node.r as Node<K, V>)
-  }
+    if (node.r !== null) {
+        stack.push(node.r)
+    }
 
-  traverse(node.root)
+    if (node.l !== null) {
+        stack.push(node.l)
+    }
+  }
 
   return result as V
 }
